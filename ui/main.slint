@@ -1,19 +1,64 @@
-import { VerticalBox, HorizontalBox, ScrollView, StandardListView  } from "std-widgets.slint";
 
-export struct FileItem {
+import { ImageShow } from "imshow.slint";
+import { VerticalBox, HorizontalBox, Button, ListView, LineEdit } from "std-widgets.slint";
+
+ export struct FileEntry {
+     name: string,
+     path: string,
+     is_directory: bool,
 }
-
-export component MainWindow inherits Window {
+ 
+export component AppWindow inherits Window {
     preferred-width: 800px;
     preferred-height: 600px;
     title: @tr("FastShow Image Viewer");
 
-    in-out property<[FileItem]> files;
-
-    VerticalBox {
-        HorizontalBox {
-        }
+    in-out property <[FileEntry]> tree-items;
+    in-out property <[FileEntry]> contents;
+    in-out property <string> current-path;
+    callback navigate(string);
+    callback refresh();
+    HorizontalBox {
         VerticalBox {
+            width: 25%;
+            padding: 5px;
+            spacing: 5px;
+            ListView {
+                for item in tree-items: HorizontalBox {
+                    spacing: 5px;
+                    Text {
+                        text: item.name;
+                    }
+                }
+            }
+        }
+
+        VerticalBox {
+            width: 75%;
+            padding: 5px;
+            HorizontalBox {
+                LineEdit {
+                    text: current-path;
+
+                    key-pressed(event) => {
+                        if (event.text == "Enter") {
+                            navigate(current-path);
+                        }
+                        return accept;
+                    }
+                }
+            }
+
+            ListView {
+                for item in contents: HorizontalBox {
+                    height: 30px;
+                    spacing: 5px;
+                    Text {
+                        text: item.name;
+                        width: 50%;
+                    }
+                }
+            }
         }
     }
 }
